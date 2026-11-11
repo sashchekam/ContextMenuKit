@@ -1,0 +1,112 @@
+included:
+  - Package.swift
+  - Sources
+  - Tests
+  - Example/ContextMenuKitExample
+
+excluded:
+  - .build
+  - Example/ContextMenuKitExample.xcodeproj
+
+opt_in_rules:
+  - closure_spacing
+  - contains_over_first_not_nil
+  - empty_count
+  - explicit_init
+  - first_where
+  - missing_docs
+  - modifier_order
+  - sorted_imports
+  - toggle_bool
+  - unneeded_parentheses_in_closure_argument
+  - vertical_whitespace_closing_braces
+  - yoda_condition
+
+line_length:
+  warning: 140
+  ignores_comments: true
+  ignores_urls: true
+
+identifier_name:
+  excluded:
+    - x
+    - y
+    - id
+
+# Every public declaration of the library is documented (DocC).
+missing_docs:
+  warning:
+    - open
+    - public
+  excludes_extensions: true
+  excludes_inherited_types: true
+  excludes_trivial_init: true
+
+custom_rules:
+  # Style.
+  empty_braces_have_space:
+    name: Empty braces with a space
+    regex: '\{\}'
+    message: 'Write empty braces with a space: `{ }`.'
+    excluded_match_kinds: [comment, string]
+    severity: error
+
+  # Library rules that a regex can check. The library is consumed by other apps,
+  # so these protect consumers: no dependencies, resources or build settings in the manifest,
+  # no app-wide singletons, no console output, and the animation choreography stays testable.
+  package_manifest_stays_plain:
+    name: Plain package manifest
+    included: '/Package\.swift$'
+    regex: '\b(swiftSettings|unsafeFlags|resources|plugins)\s*:|\.package\s*\('
+    message: >-
+      The manifest has no dependencies, resources, plugins or swiftSettings: they would become
+      requirements for every consumer.
+    excluded_match_kinds: [comment, doccomment, string]
+    severity: error
+  library_imports_system_frameworks_only:
+    name: System frameworks only
+    included: '/Sources/ContextMenuKit/'
+    regex: '^\s*(@\w+(\([^)]*\))?\s+)*import\s+(?!(UIKit|SwiftUI|Foundation|CoreGraphics|QuartzCore|Combine|Observation|os)\b)\w+'
+    message: 'The library has no dependencies; import system frameworks only.'
+    excluded_match_kinds: [comment, doccomment, string]
+    severity: error
+  library_has_no_application_singleton:
+    name: No UIApplication.shared
+    included: '/Sources/ContextMenuKit/'
+    regex: '\bUIApplication\s*\.\s*shared\b'
+    message: >-
+      UIApplication.shared is unavailable in app extensions: use sourceView.window and
+      notifications of its scene.
+    excluded_match_kinds: [comment, doccomment, string]
+    severity: error
+  library_has_no_resources:
+    name: No bundle resources
+    included: '/Sources/ContextMenuKit/'
+    regex: '\bBundle\s*\.\s*(module|main)\b|\bUIImage\s*\(\s*named\s*:'
+    message: 'The library has no resources: take images and strings as parameters or use SF Symbols.'
+    excluded_match_kinds: [comment, doccomment, string]
+    severity: error
+  library_does_not_print:
+    name: No console output
+    included: '/Sources/ContextMenuKit/'
+    regex: '(?<![\w.])(print|debugPrint|dump|NSLog)\s*\('
+    message: "A library doesn't write to the console of the app that uses it."
+    excluded_match_kinds: [comment, doccomment, string]
+    severity: error
+  choreography_does_not_wait:
+    name: No real-time waiting
+    included: '/Sources/ContextMenuKit/'
+    regex: '\basyncAfter\s*\(|\bTask\s*\.\s*sleep\b|\bTimer\s*\.\s*scheduledTimer\b|\bperform\s*\(\s*#selector\([^)]*\)\s*,\s*with\s*:[^)]*afterDelay\s*:'
+    message: >-
+      Don't wait for real time: run the choreography through AnimatesViews and deferred work
+      through ContextMenuEnvironment, so that tests run the blocks manually.
+    excluded_match_kinds: [comment, doccomment, string]
+    severity: error
+  animations_go_through_animator:
+    name: Animations through AnimatesViews
+    included: '/Sources/ContextMenuKit/'
+    excluded: '/Sources/ContextMenuKit/Presentation/AnimatesViews\.swift$'
+    regex: '\bUIView\s*\.\s*(animate|animateKeyframes|transition)\s*\(|\bUIViewPropertyAnimator\s*\('
+    message: 'Animate through AnimatesViews from ContextMenuEnvironment, so that tests run the blocks manually.'
+    excluded_match_kinds: [comment, doccomment, string]
+    severity: error
