@@ -33,11 +33,23 @@ final class ViewAnimatorMock: AnimatesViews {
     }
 }
 
+/// Records the haptics instead of playing them.
 @MainActor
 final class HapticFeedbackMock: GeneratesHapticFeedback {
-    func prepare() { }
+    enum Event: Equatable {
+        case prepare(ContextMenuHapticFeedback)
+        case play(ContextMenuHapticFeedback)
+    }
 
-    func impactOccurred() { }
+    private(set) var events: [Event] = []
+
+    func prepare(_ feedback: ContextMenuHapticFeedback) {
+        events.append(.prepare(feedback))
+    }
+
+    func play(_ feedback: ContextMenuHapticFeedback) {
+        events.append(.play(feedback))
+    }
 }
 
 /// Keeps deferred work instead of running it: tests run it manually.
@@ -64,11 +76,12 @@ extension ContextMenuEnvironment {
     static func mock(
         animator: ViewAnimatorMock,
         mainQueue: MainQueueSchedulerMock,
-        registry: ContextMenuPresentationRegistry
+        registry: ContextMenuPresentationRegistry,
+        hapticFeedback: HapticFeedbackMock = HapticFeedbackMock()
     ) -> ContextMenuEnvironment {
         ContextMenuEnvironment(
             animator: animator,
-            hapticFeedback: HapticFeedbackMock(),
+            hapticFeedback: hapticFeedback,
             registry: registry,
             notificationCenter: NotificationCenter(),
             mainQueue: mainQueue

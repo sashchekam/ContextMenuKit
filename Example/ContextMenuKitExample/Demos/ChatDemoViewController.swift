@@ -3,6 +3,7 @@ import UIKit
 
 /// Chat-like screen: message bubbles in a collection view between the navigation bar and an input panel.
 /// Incoming bubbles get a leading-aligned menu, outgoing ones — a trailing-aligned one.
+/// The menu lifts a live copy of the bubble instead of a snapshot: a part of its text can be selected and copied.
 /// A bar of reactions with a tail is shown above the bubble, on the side of the menu.
 /// On the way back the preview is clipped to the messages area. Only outgoing messages can be edited.
 final class ChatDemoViewController: UIViewController, DemoScreen {
@@ -92,6 +93,10 @@ final class ChatDemoViewController: UIViewController, DemoScreen {
         }
         return ContextMenuConfiguration(
             menu: menu,
+            // A live bubble instead of a snapshot: press and hold a word to select a part of the text and copy it.
+            preview: .view { _ in
+                MessageBubbleView(message: message, isTextSelectable: true)
+            },
             accessories: [reactions],
             alignment: message.isOutgoing ? .trailing : .leading,
             clipping: .rect { [weak self] in
@@ -144,6 +149,11 @@ struct ChatMessage {
         ChatMessage(text: "On the way back it hides behind the bar instead of flying over it.", isOutgoing: true),
         ChatMessage(text: "Tap outside the menu to close it.", isOutgoing: false),
         ChatMessage(text: "Or pick an action — it runs only after the menu is gone.", isOutgoing: true),
+        ChatMessage(
+            text: "The lifted bubble is a live view, not a picture. Press and hold a word in it, "
+                + "drag the handles and copy just a part of the message.",
+            isOutgoing: false
+        ),
         ChatMessage(text: "Short", isOutgoing: false),
         ChatMessage(text: "Shorter", isOutgoing: true),
         ChatMessage(
@@ -167,8 +177,7 @@ final class MessageCell: UICollectionViewCell {
     private(set) lazy var interaction = ContextMenuInteraction(delegate: self)
     var menuConfigurationProvider: (() -> ContextMenuConfiguration?)?
 
-    private let bubbleView = UIView()
-    private let textLabel = UILabel()
+    private let bubbleView = MessageBubbleView()
     private var incomingConstraint: NSLayoutConstraint?
     private var outgoingConstraint: NSLayoutConstraint?
 
@@ -184,23 +193,14 @@ final class MessageCell: UICollectionViewCell {
     }
 
     func configure(with message: ChatMessage) {
-        textLabel.text = message.text
-        textLabel.textColor = message.isOutgoing ? .white : .label
-        bubbleView.backgroundColor = message.isOutgoing ? .systemBlue : .secondarySystemBackground
+        bubbleView.configure(with: message)
         incomingConstraint?.isActive = !message.isOutgoing
         outgoingConstraint?.isActive = message.isOutgoing
     }
 
     private func setUpViews() {
-        bubbleView.layer.cornerRadius = 18
-        bubbleView.layer.cornerCurve = .continuous
         bubbleView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(bubbleView)
-
-        textLabel.numberOfLines = 0
-        textLabel.font = .preferredFont(forTextStyle: .body)
-        textLabel.translatesAutoresizingMaskIntoConstraints = false
-        bubbleView.addSubview(textLabel)
 
         let bottomConstraint = bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         bottomConstraint.priority = .defaultHigh
@@ -210,11 +210,7 @@ final class MessageCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor),
             bottomConstraint,
-            bubbleView.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor, multiplier: 0.75),
-            textLabel.topAnchor.constraint(equalTo: bubbleView.topAnchor, constant: 8),
-            textLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -8),
-            textLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 12),
-            textLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -12)
+            bubbleView.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor, multiplier: 0.75)
         ])
     }
 }

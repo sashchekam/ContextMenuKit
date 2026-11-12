@@ -117,7 +117,7 @@ struct ContextMenuAccessoryPresentationTests {
 
     // MARK: - Touches
 
-    @Test("A tap on an accessory doesn't dismiss the menu, a tap on the preview does")
+    @Test("A tap on an accessory doesn't dismiss the menu")
     func tapOnAccessory() throws {
         let accessoryView = UIView()
         configure(accessories: [ContextMenuAccessory { _ in accessoryView }])
@@ -126,7 +126,6 @@ struct ContextMenuAccessoryPresentationTests {
         let overlay = try #require(overlay)
 
         #expect(overlay.isMenuContent(accessoryView))
-        #expect(!overlay.isMenuContent(overlay.previewView))
     }
 
     // MARK: - Scrolling

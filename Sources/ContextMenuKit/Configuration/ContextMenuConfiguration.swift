@@ -4,6 +4,9 @@ import SwiftUI
 public struct ContextMenuConfiguration {
     /// Sections and items of the menu. Without items, only the preview and the accessories are shown.
     public var menu: ContextMenu
+    /// What the menu lifts above the backdrop: a snapshot of the source view or your own view,
+    /// see ``ContextMenuPreview``.
+    public var preview: ContextMenuPreview
     /// Views shown next to the preview and the menu, outside of the menu list, see ``ContextMenuAccessory``.
     /// Listed later, an accessory is drawn above the earlier ones.
     public var accessories: [ContextMenuAccessory]
@@ -27,6 +30,7 @@ public struct ContextMenuConfiguration {
     /// Creates a configuration.
     /// - Parameters:
     ///   - menu: Sections and items of the menu. Without items, only the preview and the accessories are shown.
+    ///   - preview: What the menu lifts above the backdrop. A snapshot of the source view by default.
     ///   - accessories: Views shown next to the preview and the menu.
     ///   - alignment: Horizontal alignment of the menu relative to the preview.
     ///   - clipping: Where the source view is visible, so that on its way back the preview doesn't fly over bars.
@@ -34,6 +38,7 @@ public struct ContextMenuConfiguration {
     ///   - animationSpec: Timings and curves of the transitions.
     public init(
         menu: ContextMenu = ContextMenu { },
+        preview: ContextMenuPreview = .snapshot,
         accessories: [ContextMenuAccessory] = [],
         alignment: ContextMenuAlignment = .automatic,
         clipping: ContextMenuClipping = .none,
@@ -41,6 +46,7 @@ public struct ContextMenuConfiguration {
         animationSpec: ContextMenuAnimationSpec = .default
     ) {
         self.menu = menu
+        self.preview = preview
         self.accessories = accessories
         self.alignment = alignment
         self.clipping = clipping

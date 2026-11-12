@@ -62,7 +62,7 @@ enum Demo: String, CaseIterable {
         case .freeViews:
             "Views of different sizes all over the screen"
         case .chat:
-            "Bubbles in a collection view, clipped by the bars on the way back"
+            "A live bubble with selectable text, clipped by the bars on the way back"
         case .files:
             "Menus built from the state of each file, actions that change the grid"
         case .tallPreview:

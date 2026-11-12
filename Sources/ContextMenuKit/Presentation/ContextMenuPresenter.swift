@@ -12,8 +12,8 @@ protocol ContextMenuPresenterDelegate: AnyObject {
 
 /// Drives one menu session: press, presentation, dismissal and the selected action.
 ///
-/// The preview is a snapshot of the source view; the source view stays in place, invisible,
-/// until the preview lands back on it. Accessories move with the preview and the menu. Every command goes through the state machine,
+/// The preview is a snapshot of the source view or a view of the configuration; the source view stays in place,
+/// invisible, until the preview lands back on it. Accessories move with the preview and the menu. Every command goes through the state machine,
 /// so repeated taps and stale animation completions are ignored.
 @MainActor
 final class ContextMenuPresenter: NSObject {
@@ -90,7 +90,7 @@ final class ContextMenuPresenter: NSObject {
             name: UIScene.didEnterBackgroundNotification,
             object: window.windowScene
         )
-        environment.hapticFeedback.prepare()
+        environment.hapticFeedback.prepareIfNeeded(configuration.animationSpec.hapticFeedback)
 
         guard pressesDown else {
             present(previewScale: 1)
@@ -142,14 +142,17 @@ final class ContextMenuPresenter: NSObject {
     // MARK: - Presentation
 
     private func present(previewScale: CGFloat) {
-        guard let previewView = sourceView.snapshotView(afterScreenUpdates: true) else {
+        let proxy = ContextMenuProxy(environmentValues: configuration.environmentValues) { [weak self] handler in
+            self?.dismiss(performing: handler)
+        }
+        guard let previewView = ContextMenuPreviewContainerView(configuration.preview, of: sourceView, proxy: proxy) else {
             cancelPress(animated: true)
             return
         }
         stateMachine.handle(.presentationBegan)
         delegate?.presenterWillPresent(self)
 
-        let overlay = makeOverlay(previewView: previewView)
+        let overlay = makeOverlay(previewView: previewView, proxy: proxy)
         window.addSubview(overlay)
         overlay.layoutIfNeeded()
         self.overlay = overlay
@@ -177,7 +180,7 @@ final class ContextMenuPresenter: NSObject {
             )
         }
 
-        environment.hapticFeedback.impactOccurred()
+        environment.hapticFeedback.playIfNeeded(configuration.animationSpec.hapticFeedback)
         transitionAnimator.animatePresentation(
             of: overlay,
             frames: presentedFrames,
@@ -197,10 +200,7 @@ final class ContextMenuPresenter: NSObject {
         delegate?.presenterDidPresent(self)
     }
 
-    private func makeOverlay(previewView: UIView) -> ContextMenuOverlayView {
-        let proxy = ContextMenuProxy(environmentValues: configuration.environmentValues) { [weak self] handler in
-            self?.dismiss(performing: handler)
-        }
+    private func makeOverlay(previewView: ContextMenuPreviewContainerView, proxy: ContextMenuProxy) -> ContextMenuOverlayView {
         let menuView = ContextMenuListView(menu: configuration.menu, style: configuration.style, proxy: proxy)
         // A menu without items still anchors the accessories attached to it.
         menuView.isHidden = configuration.menu.isEmpty
@@ -245,6 +245,8 @@ final class ContextMenuPresenter: NSObject {
         }
         delegate?.presenterWillDismiss(self)
         overlay.isUserInteractionEnabled = false
+        // A text selection in a live preview, its edit menu or a keyboard go away before the preview flies back.
+        overlay.endEditing(true)
         overlay.accessoryViews.forEach { $0.willDismiss() }
 
         guard animated else {

@@ -22,6 +22,9 @@ public extension View {
     /// The menu is built right before it is shown, so it reflects the current state. A menu without items
     /// and accessories isn't shown.
     ///
+    /// By default the preview is a snapshot of the view. Pass `preview: .view { … }` for a live view,
+    /// see ``ContextMenuPreview``.
+    ///
     /// Accessories put your views next to the preview and the menu, for example reactions above a message:
     ///
     /// ```swift
@@ -56,6 +59,7 @@ public extension View {
     ///   - clipping: Where the view is visible, so that on its way back the preview doesn't fly over bars.
     ///   - style: Colors, fonts and sizes of the menu.
     ///   - animationSpec: Timings and curves of the press, the presentation and the dismissal.
+    ///   - preview: What the menu lifts above the backdrop. A snapshot of the view by default.
     ///   - accessories: Views shown next to the preview and the menu, see ``ContextMenuAccessory``.
     ///   - menu: Sections, actions and custom items of the menu, see ``ContextMenuBuilder``.
     @available(iOS 16.0, *)
@@ -65,12 +69,14 @@ public extension View {
         clipping: ContextMenuClipping = .none,
         style: ContextMenuStyle = .default,
         animationSpec: ContextMenuAnimationSpec = .default,
+        preview: ContextMenuPreview = .snapshot,
         accessories: [ContextMenuAccessory] = [],
         @ContextMenuBuilder menu: @escaping @MainActor () -> [ContextMenuSection]
     ) -> some View {
         ContextMenuInteractionRepresentable(content: self, isPresented: isPresented) {
             ContextMenuConfiguration(
                 menu: ContextMenu(content: menu),
+                preview: preview,
                 accessories: accessories,
                 alignment: alignment,
                 clipping: clipping,

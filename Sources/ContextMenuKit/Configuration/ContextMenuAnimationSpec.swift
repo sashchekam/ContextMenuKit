@@ -1,7 +1,7 @@
 import CoreGraphics
 import Foundation
 
-/// Timings and scales of the menu transitions.
+/// Timings, scales and the haptic of the menu transitions.
 public struct ContextMenuAnimationSpec: Sendable {
     /// Parameters of a spring animation.
     public struct Spring: Sendable, Equatable {
@@ -35,6 +35,9 @@ public struct ContextMenuAnimationSpec: Sendable {
     /// Duration of the final cross-fade from the preview to the source view.
     /// `0` removes the preview right after it has landed.
     public var previewFadeOutDuration: TimeInterval = 0.15
+    /// Played when the preview starts to lift, after a long press and when the menu is presented without a press.
+    /// `nil` turns the haptic off.
+    public var hapticFeedback: ContextMenuHapticFeedback? = .impact(.rigid)
 
     public init() { }
 }

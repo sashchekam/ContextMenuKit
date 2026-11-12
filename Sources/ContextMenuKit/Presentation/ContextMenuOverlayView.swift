@@ -1,8 +1,8 @@
 import UIKit
 
 /// Full-window overlay: dimming and blur backdrop, and a vertical scroll view
-/// that holds the preview, the menu and the accessories. A tap outside the menu and the accessories
-/// requests dismissal.
+/// that holds the preview, the menu and the accessories. A tap outside the menu, the accessories
+/// and a live preview requests dismissal.
 @MainActor
 final class ContextMenuOverlayView: UIView {
     let dimmingView = UIView()
@@ -10,7 +10,7 @@ final class ContextMenuOverlayView: UIView {
     let scrollView = ContextMenuScrollView()
     /// Container of the preview, the menu and the accessories, its coordinates are the scroll view content coordinates.
     let contentView = UIView()
-    let previewView: UIView
+    let previewView: ContextMenuPreviewContainerView
     let menuView: ContextMenuListView
     /// Drawn above the preview and the menu, in the order of the configuration.
     let accessoryViews: [ContextMenuAccessoryContainerView]
@@ -25,7 +25,7 @@ final class ContextMenuOverlayView: UIView {
 
     init(
         frame: CGRect,
-        previewView: UIView,
+        previewView: ContextMenuPreviewContainerView,
         menuView: ContextMenuListView,
         accessoryViews: [ContextMenuAccessoryContainerView],
         style: ContextMenuStyle.Background
@@ -80,9 +80,12 @@ final class ContextMenuOverlayView: UIView {
         return true
     }
 
-    /// `true` for a view of the menu or of an accessory: a tap on it doesn't dismiss the menu.
+    /// `true` for a view of the menu, of an accessory or of a live preview: a tap on it doesn't dismiss the menu.
+    /// A snapshot preview never gets touches, so a tap on it reaches the backdrop.
     func isMenuContent(_ view: UIView) -> Bool {
-        view.isDescendant(of: menuView) || accessoryViews.contains { view.isDescendant(of: $0) }
+        view.isDescendant(of: menuView)
+            || view.isDescendant(of: previewView)
+            || accessoryViews.contains { view.isDescendant(of: $0) }
     }
 
     func setContent(size: CGSize, offset: CGPoint) {

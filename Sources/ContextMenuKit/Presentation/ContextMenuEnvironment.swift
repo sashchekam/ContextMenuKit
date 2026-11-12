@@ -6,7 +6,7 @@ struct ContextMenuEnvironment {
     static var live: ContextMenuEnvironment {
         ContextMenuEnvironment(
             animator: UIKitViewAnimator(),
-            hapticFeedback: ImpactHapticFeedback(),
+            hapticFeedback: UIKitHapticFeedback(),
             registry: .shared,
             notificationCenter: .default,
             mainQueue: MainQueueScheduler()

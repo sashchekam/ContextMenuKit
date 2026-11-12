@@ -2,7 +2,7 @@ import ContextMenuKit
 import UIKit
 
 /// The same menu in different looks. Every card sets its own ``ContextMenuStyle`` (colors, fonts, sizes, backdrop)
-/// or ``ContextMenuAnimationSpec`` (press, lift and dismissal timings) in the configuration.
+/// or ``ContextMenuAnimationSpec`` (press, lift and dismissal timings, the haptic) in the configuration.
 final class StylesDemoViewController: UIViewController, DemoScreen {
     private struct StyledCard {
         let title: String
@@ -26,8 +26,18 @@ final class StylesDemoViewController: UIViewController, DemoScreen {
                 StyledCard(title: "Rounded", subtitle: "Colors, font, corners, backdrop", color: .systemIndigo, style: .rounded),
                 StyledCard(title: "Compact", subtitle: "Smaller rows, narrower menu", color: .systemTeal, style: .compact),
                 StyledCard(title: "Dark", subtitle: "Dark in any appearance", color: UIColor(white: 0.2, alpha: 1), style: .dark),
-                StyledCard(title: "Bouncy", subtitle: "Deeper press, springier lift", color: .systemOrange, animationSpec: .bouncy),
-                StyledCard(title: "Snappy", subtitle: "Light press, quick transitions", color: .systemGreen, animationSpec: .snappy)
+                StyledCard(
+                    title: "Bouncy",
+                    subtitle: "Deeper press, springier lift, heavy haptic",
+                    color: .systemOrange,
+                    animationSpec: .bouncy
+                ),
+                StyledCard(
+                    title: "Snappy",
+                    subtitle: "Light press, quick transitions, no haptic",
+                    color: .systemGreen,
+                    animationSpec: .snappy
+                )
             ]
         }
     }
@@ -178,7 +188,7 @@ private extension UIFont {
 // MARK: - Animation specs
 
 private extension ContextMenuAnimationSpec {
-    /// A deeper and longer press, a lift that overshoots, a menu that grows from a larger size.
+    /// A deeper and longer press, a lift that overshoots with a heavy haptic, a menu that grows from a larger size.
     static var bouncy: ContextMenuAnimationSpec {
         var spec = ContextMenuAnimationSpec()
         spec.pressDownScale = 0.9
@@ -186,10 +196,11 @@ private extension ContextMenuAnimationSpec {
         spec.presentation = Spring(duration: 0.7, dampingRatio: 0.5, initialVelocity: 1)
         spec.collapsedMenuScale = 0.3
         spec.dismissalDuration = 0.3
+        spec.hapticFeedback = .impact(.heavy)
         return spec
     }
 
-    /// A barely visible press and short transitions without an overshoot.
+    /// A barely visible press and short transitions without an overshoot and without a haptic.
     static var snappy: ContextMenuAnimationSpec {
         var spec = ContextMenuAnimationSpec()
         spec.pressDownScale = 0.98
@@ -197,6 +208,7 @@ private extension ContextMenuAnimationSpec {
         spec.presentation = Spring(duration: 0.3, dampingRatio: 1, initialVelocity: 0)
         spec.dismissalDuration = 0.15
         spec.previewFadeOutDuration = 0.1
+        spec.hapticFeedback = nil
         return spec
     }
 }

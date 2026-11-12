@@ -1,10 +1,12 @@
 import SwiftUI
 import UIKit
 
-/// Hosts the SwiftUI view of a ``ContextMenuCustomItem`` in the menu or of a ``ContextMenuAccessory`` in the overlay.
+/// Hosts the SwiftUI view of a ``ContextMenuCustomItem`` in the menu, of a ``ContextMenuAccessory``
+/// or of a ``ContextMenuPreview`` in the overlay.
 ///
 /// Measures the content for the proposed width: the width of the menu for an item, see ``ContextMenuCustomItemRow``,
 /// or the width limit for a fitting accessory, see ``ContextMenuAccessoryContainerView``.
+/// A preview is as large as the source view and isn't measured.
 @MainActor
 final class ContextMenuHostingItemView<Content: View>: UIView {
     private let hostingController: UIHostingController<ContextMenuHostedContent<Content>>

@@ -18,12 +18,15 @@ The press-down, the lift and the blur of the system menu — with your own items
 
 - **Feels like the system menu.** The view presses down, its preview lifts above a blurred backdrop and the menu
   grows from the corner closest to it. On the way back the preview can hide behind the bars instead of flying over them.
+- **A live preview when you need one.** The preview is a snapshot by default, or your own view that stays live:
+  select and copy a part of a message right in the lifted bubble.
 - **Your own views in the menu.** Reactions, sliders, rows with avatars — interactive or selectable like an action.
 - **Accessories around it.** Reactions above a message, a badge on the preview, a hint below the menu.
 - **UIKit and SwiftUI.** A `UIInteraction` for any `UIView`, a modifier with an `isPresented` binding for SwiftUI.
 - **Any size, anywhere.** The preview moves to make room for the menu and stays clear of the safe area;
   content taller than the screen makes the overlay scroll.
-- **Styled to your app.** Every color, font, size and timing lives in `ContextMenuStyle` and `ContextMenuAnimationSpec`.
+- **Styled to your app.** Every color, font, size, timing and the haptic live in `ContextMenuStyle`
+  and `ContextMenuAnimationSpec`.
 - **No dependencies.** iOS 15+, no resources, no `UIApplication.shared`, works in app extensions.
 
 <table>
@@ -127,6 +130,32 @@ final class MessageCell: UICollectionViewCell, ContextMenuInteractionDelegate {
 - `interaction.presentMenu()` shows the menu without a press, e.g. from a "More" button.
 - `ContextMenuClipping.rect` keeps the preview from flying over navigation bars on its way back.
 - `ContextMenuStyle` and `ContextMenuAnimationSpec` hold every color, size and timing.
+- `animationSpec.hapticFeedback` is the haptic of the lift: `.impact(.soft, intensity: 0.7)`, `.selection`,
+  or `nil` to turn it off. A rigid impact by default.
+
+### Live preview
+
+By default the menu lifts a snapshot of the view. `preview: .view { … }` lifts your own view instead: it stays live
+and gets touches. In a chat, the lifted bubble can let the user select a part of a message and copy it:
+
+```swift
+ContextMenuConfiguration(
+    menu: menu,
+    // The same bubble as in the cell, with a selectable UITextView for the text.
+    preview: .view { _ in
+        MessageBubbleView(message: message, isTextSelectable: true)
+    },
+    alignment: message.isOutgoing ? .trailing : .leading
+)
+```
+
+- The view is as large as the source view and sits right over it, so make it look the same: the source view is
+  hidden while the menu is shown, and the preview fades into it once it has landed.
+- A tap on the view doesn't dismiss the menu; a view with `isUserInteractionEnabled = false` lets the tap through.
+  Close the menu from the view with `menu.dismiss(performing:)`.
+- When the dismissal starts, the preview resigns the first responder: the text selection and its edit menu go away
+  before the preview flies back.
+- SwiftUI views work too: `preview: .view { _ in MessageBubble(message) }`, and the modifier takes `preview:`.
 
 ### Custom items
 
@@ -235,7 +264,7 @@ struct MessageRow: View {
 ```
 
 - The modifier takes the same builder as `ContextMenu { … }` and the same options as `ContextMenuConfiguration`,
-  accessories included.
+  the preview and accessories included.
   The menu is built right before it is shown.
 - `isPresented` is optional: set it to `true` to show the menu without a press, e.g. from a "More" button.
   It turns `false` once the menu is dismissed.
@@ -247,7 +276,8 @@ struct MessageRow: View {
 
 ## Example app
 
-`Example/ContextMenuKitExample.xcodeproj` has a screen for every feature: a chat, a file grid, free views
+`Example/ContextMenuKitExample.xcodeproj` has a screen for every feature: a chat with selectable text in the lifted
+bubble, a file grid, free views
 of different sizes, a view and a menu taller than the screen, a "More" button, custom items, accessories, styles,
 a log of delegate calls and SwiftUI. Open it and press Cmd+R.
 
