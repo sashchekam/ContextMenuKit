@@ -1,10 +1,88 @@
+<div align="center">
+
 # ContextMenuKit
 
-A custom context menu for any `UIView` or SwiftUI view. A long press presses the view down, lifts its preview above a blurred
-backdrop and shows a menu next to it — with the timing and feel of the system menu, but with your own layout
-and style.
+**A custom context menu for any `UIView` or SwiftUI view.**<br>
+The press-down, the lift and the blur of the system menu — with your own items, layout and style.
 
+![iOS 15+](https://img.shields.io/badge/iOS-15%2B-0A84FF?logo=apple&logoColor=white)
+![Swift 5 and 6](https://img.shields.io/badge/Swift-5%20%7C%206-F05138?logo=swift&logoColor=white)
+![Swift Package Manager](https://img.shields.io/badge/SwiftPM-compatible-30D158)
+![No dependencies](https://img.shields.io/badge/dependencies-none-8E8E93)
+
+<img src=".github/media/hero.png" width="300" alt="A long press on a chat bubble: the bubble presses down and lifts above the blurred chat with a bar of reactions above it and a menu below it. A tap on the heart closes the menu.">
+
+</div>
+
+> [!NOTE]
 > Work in progress: the API may change until 1.0.
+
+## Highlights
+
+- **Feels like the system menu.** The view presses down, its preview lifts above a blurred backdrop and the menu
+  grows from the corner closest to it. On the way back the preview can hide behind the bars instead of flying over them.
+- **Your own views in the menu.** Reactions, sliders, rows with avatars — interactive or selectable like an action.
+- **Accessories around it.** Reactions above a message, a badge on the preview, a hint below the menu.
+- **UIKit and SwiftUI.** A `UIInteraction` for any `UIView`, a modifier with an `isPresented` binding for SwiftUI.
+- **Any size, anywhere.** The preview moves to make room for the menu and stays clear of the safe area;
+  content taller than the screen makes the overlay scroll.
+- **Styled to your app.** Every color, font, size and timing lives in `ContextMenuStyle` and `ContextMenuAnimationSpec`.
+- **No dependencies.** iOS 15+, no resources, no `UIApplication.shared`, works in app extensions.
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".github/media/custom-items-dark.png">
+        <img src=".github/media/custom-items-light.png" width="230" alt="A menu with a row of reactions, a volume slider and a row of read receipts above the actions">
+      </picture>
+      <br><b>Custom items</b>
+      <br><sub>Your own views in the menu</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".github/media/accessories-dark.png">
+        <img src=".github/media/accessories-light.png" width="230" alt="Reactions above the preview, a pin badge on its corner and a hint below the menu">
+      </picture>
+      <br><b>Accessories</b>
+      <br><sub>Around the preview and the menu</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".github/media/swiftui-dark.png">
+        <img src=".github/media/swiftui-light.png" width="230" alt="A SwiftUI card with a menu that has a row of color swatches above the actions">
+      </picture>
+      <br><b>SwiftUI</b>
+      <br><sub>One modifier, the same builder</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".github/media/files-dark.png">
+        <img src=".github/media/files-light.png" width="230" alt="A file in a grid with a menu of three sections and a destructive Delete action">
+      </picture>
+      <br><b>Sections and icons</b>
+      <br><sub>Built-in icons for common actions</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".github/media/styles-dark.png">
+        <img src=".github/media/styles-light.png" width="230" alt="A menu with indigo icons and separators over a tinted backdrop">
+      </picture>
+      <br><b>Styles</b>
+      <br><sub>Colors, fonts, corners, backdrop</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset=".github/media/free-views-dark.png">
+        <img src=".github/media/free-views-light.png" width="230" alt="A card in the middle of the screen with a menu that has a disabled Rename action">
+      </picture>
+      <br><b>Any view</b>
+      <br><sub>Any size, anywhere on screen</sub>
+    </td>
+  </tr>
+</table>
 
 ## Requirements
 
@@ -13,7 +91,7 @@ and style.
 
 ## Installation
 
-Swift Package Manager:
+In Xcode: **File → Add Package Dependencies…** and paste the repository URL. Or in `Package.swift`:
 
 ```swift
 .package(url: "<repository URL>", from: "0.1.0")
@@ -169,6 +247,12 @@ struct MessageRow: View {
   transaction from outside doesn't animate it: apply such modifiers outside, use `animation(_:value:)` inside.
 - `ContextMenu` as a type name is ambiguous with the deprecated `SwiftUI.ContextMenu`: write
   `ContextMenuKit.ContextMenu`. Expressions like `ContextMenu { … }` compile as is.
+
+## Example app
+
+`Example/ContextMenuKitExample.xcodeproj` has a screen for every feature: a chat, a file grid, free views
+of different sizes, a view and a menu taller than the screen, a "More" button, custom items, accessories, styles,
+a log of delegate calls and SwiftUI. Open it and press Cmd+R.
 
 ## Development
 
