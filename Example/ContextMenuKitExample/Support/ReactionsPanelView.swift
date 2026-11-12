@@ -28,7 +28,7 @@ final class ReactionsPanelView: UIView, ContextMenuAccessoryView {
         static let tailInset: CGFloat = 24
         static let shadowOpacity: Float = 0.12
         static let shadowRadius: CGFloat = 8
-        // Pop-in of the buttons, the reference parameters.
+        // Pop-in of the buttons.
         static let popDuration: TimeInterval = 0.35
         static let popDampingRatio: CGFloat = 0.6
         static let popVelocity: CGFloat = 0.5

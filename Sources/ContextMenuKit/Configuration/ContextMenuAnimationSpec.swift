@@ -1,7 +1,7 @@
 import CoreGraphics
 import Foundation
 
-/// Timings and scales of the menu transitions. Defaults reproduce the reference animation.
+/// Timings and scales of the menu transitions.
 public struct ContextMenuAnimationSpec: Sendable {
     /// Parameters of a spring animation.
     public struct Spring: Sendable, Equatable {

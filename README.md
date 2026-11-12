@@ -14,9 +14,6 @@ The press-down, the lift and the blur of the system menu — with your own items
 
 </div>
 
-> [!NOTE]
-> Work in progress: the API may change until 1.0.
-
 ## Highlights
 
 - **Feels like the system menu.** The view presses down, its preview lifts above a blurred backdrop and the menu
@@ -94,7 +91,7 @@ The press-down, the lift and the blur of the system menu — with your own items
 In Xcode: **File → Add Package Dependencies…** and paste the repository URL. Or in `Package.swift`:
 
 ```swift
-.package(url: "<repository URL>", from: "0.1.0")
+.package(url: "https://github.com/sashchekam/ContextMenuKit", from: "0.1.0")
 ```
 
 ## Usage
@@ -257,7 +254,7 @@ a log of delegate calls and SwiftUI. Open it and press Cmd+R.
 ## Development
 
 Open `Example/ContextMenuKitExample.xcodeproj`: Cmd+R runs the example app, Cmd+U runs the package tests.
-Snapshot references are recorded on iPhone 17 Pro with iOS 26.3, so run the tests on that simulator.
+Snapshot references are recorded on iPhone 17 Pro with iOS 26.0, so run the tests on that simulator.
 
 The same from the command line:
 

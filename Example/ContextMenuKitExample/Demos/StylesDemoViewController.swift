@@ -22,7 +22,7 @@ final class StylesDemoViewController: UIViewController, DemoScreen {
         /// Computed: ``ContextMenuStyle`` isn't `Sendable`, so it can't be stored in a static constant.
         static var cards: [StyledCard] {
             [
-                StyledCard(title: "Default", subtitle: "The reference look", color: .systemGray),
+                StyledCard(title: "Default", subtitle: "The built-in look", color: .systemGray),
                 StyledCard(title: "Rounded", subtitle: "Colors, font, corners, backdrop", color: .systemIndigo, style: .rounded),
                 StyledCard(title: "Compact", subtitle: "Smaller rows, narrower menu", color: .systemTeal, style: .compact),
                 StyledCard(title: "Dark", subtitle: "Dark in any appearance", color: UIColor(white: 0.2, alpha: 1), style: .dark),

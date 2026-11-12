@@ -1,9 +1,9 @@
-# Commands for agents and CI. People can just open Example/ContextMenuKitExample.xcodeproj:
+# Commands for the command line and CI. People can just open Example/ContextMenuKitExample.xcodeproj:
 # Cmd+R runs the example, Cmd+U runs the package tests.
 
-SIMULATOR_NAME ?= ContextMenuKit-iPhone-17-Pro
+SIMULATOR_NAME ?= ContextMenuKit-iPhone-17-Pro-iOS-26-0
 SIMULATOR_DEVICE_TYPE ?= com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro
-SIMULATOR_RUNTIME ?= com.apple.CoreSimulator.SimRuntime.iOS-26-3
+SIMULATOR_RUNTIME ?= com.apple.CoreSimulator.SimRuntime.iOS-26-0
 DESTINATION = platform=iOS Simulator,name=$(SIMULATOR_NAME)
 
 EXAMPLE_PROJECT = Example/ContextMenuKitExample.xcodeproj
