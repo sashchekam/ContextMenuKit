@@ -9,6 +9,7 @@ The press-down, the lift and the blur of the system menu — with your own items
 ![Swift 5 and 6](https://img.shields.io/badge/Swift-5%20%7C%206-F05138?logo=swift&logoColor=white)
 ![Swift Package Manager](https://img.shields.io/badge/SwiftPM-compatible-30D158)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-8E8E93)
+![MIT license](https://img.shields.io/badge/license-MIT-8E8E93)
 
 <img src=".github/media/hero.png" width="300" alt="A long press on a chat bubble: the bubble presses down and lifts above the blurred chat with a bar of reactions above it and a menu below it. A tap on the heart closes the menu.">
 
@@ -293,3 +294,7 @@ make test        # package tests
 make example     # build the example app
 make lint        # SwiftLint
 ```
+
+## License
+
+ContextMenuKit is available under the MIT license. See [LICENSE](LICENSE).
