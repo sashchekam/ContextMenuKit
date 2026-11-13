@@ -72,12 +72,7 @@ struct SwiftUIDemoView: View {
             SwiftUIDemoBubble(message: message)
                 .contextMenuInteraction(
                     alignment: message.isOutgoing ? .trailing : .leading,
-                    clipping: .rect { messagesFrame ?? .infinite },
-                    accessories: [
-                        ContextMenuAccessory(placement: .above(.preview), scrollBehavior: .staysVisible) { menu in
-                            SwiftUIDemoReactions(menu: menu)
-                        }
-                    ]
+                    clipping: .rect { messagesFrame ?? .infinite }
                 ) {
                     if message.isOutgoing {
                         ContextMenuSection {
@@ -99,6 +94,10 @@ struct SwiftUIDemoView: View {
                             action("Edit", image: .edit)
                         }
                         action("Delete", image: .delete, isDestructive: true)
+                    }
+                } accessories: {
+                    ContextMenuAccessory(placement: .above(.preview), scrollBehavior: .staysVisible) { menu in
+                        SwiftUIDemoReactions(menu: menu)
                     }
                 }
             if !message.isOutgoing {

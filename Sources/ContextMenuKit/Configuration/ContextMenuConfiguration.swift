@@ -8,7 +8,8 @@ public struct ContextMenuConfiguration {
     /// see ``ContextMenuPreview``.
     public var preview: ContextMenuPreview
     /// Views shown next to the preview and the menu, outside of the menu list, see ``ContextMenuAccessory``.
-    /// Listed later, an accessory is drawn above the earlier ones.
+    /// Listed later, an accessory is drawn above the earlier ones. To list them in a closure, with `if` and `for`,
+    /// use `init(menu:preview:alignment:clipping:style:animationSpec:accessories:)`.
     public var accessories: [ContextMenuAccessory]
     /// Horizontal alignment of the menu relative to the preview.
     public var alignment: ContextMenuAlignment
@@ -52,5 +53,45 @@ public struct ContextMenuConfiguration {
         self.clipping = clipping
         self.style = style
         self.animationSpec = animationSpec
+    }
+
+    /// Creates a configuration with the accessories listed in a closure.
+    ///
+    /// ```swift
+    /// ContextMenuConfiguration(menu: menu, alignment: .trailing) {
+    ///     ContextMenuAccessory(placement: .above(.preview)) { menu in
+    ///         ReactionsBar { reaction in menu.dismiss { react(with: reaction) } }
+    ///     }
+    ///     if message.isEdited {
+    ///         editedLabel
+    ///     }
+    /// }
+    /// ```
+    /// - Parameters:
+    ///   - menu: Sections and items of the menu. Without items, only the preview and the accessories are shown.
+    ///   - preview: What the menu lifts above the backdrop. A snapshot of the source view by default.
+    ///   - alignment: Horizontal alignment of the menu relative to the preview.
+    ///   - clipping: Where the source view is visible, so that on its way back the preview doesn't fly over bars.
+    ///   - style: Colors, fonts and sizes.
+    ///   - animationSpec: Timings and curves of the transitions.
+    ///   - accessories: Views shown next to the preview and the menu, see ``ContextMenuAccessoryBuilder``.
+    public init(
+        menu: ContextMenu = ContextMenu { },
+        preview: ContextMenuPreview = .snapshot,
+        alignment: ContextMenuAlignment = .automatic,
+        clipping: ContextMenuClipping = .none,
+        style: ContextMenuStyle = .default,
+        animationSpec: ContextMenuAnimationSpec = .default,
+        @ContextMenuAccessoryBuilder accessories: () -> [ContextMenuAccessory]
+    ) {
+        self.init(
+            menu: menu,
+            preview: preview,
+            accessories: accessories(),
+            alignment: alignment,
+            clipping: clipping,
+            style: style,
+            animationSpec: animationSpec
+        )
     }
 }

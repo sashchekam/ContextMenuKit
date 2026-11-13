@@ -4,16 +4,13 @@ import UIKit
 /// a badge over the preview, a label next to it.
 ///
 /// ```swift
-/// ContextMenuConfiguration(
-///     menu: menu,
-///     accessories: [
-///         ContextMenuAccessory(placement: .above(.preview)) { menu in
-///             ReactionsBar(reactions: reactions) { reaction in
-///                 menu.dismiss { react(with: reaction) }
-///             }
+/// ContextMenuConfiguration(menu: menu) {
+///     ContextMenuAccessory(placement: .above(.preview)) { menu in
+///         ReactionsBar(reactions: reactions) { reaction in
+///             menu.dismiss { react(with: reaction) }
 ///         }
-///     ]
-/// )
+///     }
+/// }
 /// ```
 ///
 /// - **Placement.** An accessory is attached to the preview or to the menu: above, below, beside or over it,

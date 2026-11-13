@@ -152,7 +152,13 @@ extension AccessoriesDemoViewController: ContextMenuInteractionDelegate {
                 ContextMenuAction.toast("Delete", image: .system(.delete), in: view, isDestructive: true)
             }
         }
-        return ContextMenuConfiguration(menu: menu, accessories: [reactions, pin, viewsCounter, editedLabel, hint])
+        return ContextMenuConfiguration(menu: menu) {
+            reactions
+            pin
+            viewsCounter
+            editedLabel
+            hint
+        }
     }
 }
 

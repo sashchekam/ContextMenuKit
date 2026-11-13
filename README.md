@@ -195,16 +195,15 @@ ContextMenu {
 reactions above a message, a hint below the menu, a badge on the preview.
 
 ```swift
-ContextMenuConfiguration(
-    menu: menu,
-    accessories: [
-        // Reactions above the message, on the side of the menu; they stay on screen above a tall message.
-        ContextMenuAccessory(placement: .above(.preview), scrollBehavior: .staysVisible) { menu in
-            ReactionsBar(reactions: reactions) { reaction in
-                menu.dismiss { react(with: reaction) }
-            }
-        },
-        // A hint as wide as the menu, centered below it, that only fades in.
+ContextMenuConfiguration(menu: menu, alignment: message.isOutgoing ? .trailing : .leading) {
+    // Reactions above the message, on the side of the menu; they stay on screen above a tall message.
+    ContextMenuAccessory(placement: .above(.preview), scrollBehavior: .staysVisible) { menu in
+        ReactionsBar(reactions: reactions) { reaction in
+            menu.dismiss { react(with: reaction) }
+        }
+    }
+    // A hint as wide as the menu, centered below it, that only fades in.
+    if showsHint {
         ContextMenuAccessory(
             placement: .below(.menu, alignment: .center),
             size: ContextMenuAccessory.Size(width: .matchingTarget),
@@ -212,10 +211,12 @@ ContextMenuConfiguration(
         ) { _ in
             HintLabel("Reactions are visible to everyone in the chat.")
         }
-    ],
-    alignment: message.isOutgoing ? .trailing : .leading
-)
+    }
+}
 ```
+
+The closure takes `if`, `switch` and `for`, like `ContextMenu { … }`; an accessory listed later is drawn above
+the earlier ones. An array works too: `ContextMenuConfiguration(menu: menu, accessories: [reactions, hint])`.
 
 - **Placement.** `.above`, `.below`, `.beside` or `.overlay` the preview or the menu, aligned with an edge,
   the center or the edge of the menu (`.menuEdge`, follows `.automatic` alignment). Any other relation:
@@ -233,8 +234,8 @@ ContextMenuConfiguration(
   (to point a tail at the preview) and when the menu appears and disappears (to run its own animations).
 - A menu may have no items at all: `ContextMenuConfiguration(accessories: [reactions])` shows only the preview
   and the accessories.
-- SwiftUI views work too: `ContextMenuAccessory { menu in Reactions(menu: menu) }`, and the modifier takes
-  `accessories:`.
+- SwiftUI views work too: `ContextMenuAccessory { menu in Reactions(menu: menu) }`. The modifier takes them
+  in a closure after the menu, `.contextMenuInteraction { … } accessories: { … }`, or as an array, `accessories:`.
 
 ### SwiftUI
 
@@ -266,7 +267,7 @@ struct MessageRow: View {
 
 - The modifier takes the same builder as `ContextMenu { … }` and the same options as `ContextMenuConfiguration`,
   the preview and accessories included.
-  The menu is built right before it is shown.
+  The menu is built right before it is shown, and so are accessories listed in the closure after it.
 - `isPresented` is optional: set it to `true` to show the menu without a press, e.g. from a "More" button.
   It turns `false` once the menu is dismissed.
 - The view is hosted in its own `UIHostingController`. It gets the environment (environment objects included),

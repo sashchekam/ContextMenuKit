@@ -25,15 +25,14 @@ public extension View {
     /// By default the preview is a snapshot of the view. Pass `preview: .view { … }` for a live view,
     /// see ``ContextMenuPreview``.
     ///
-    /// Accessories put your views next to the preview and the menu, for example reactions above a message:
+    /// Accessories put your views next to the preview and the menu, for example reactions above a message.
+    /// List them in a closure after the menu, see
+    /// `contextMenuInteraction(isPresented:alignment:clipping:style:animationSpec:preview:menu:accessories:)`,
+    /// or pass an array:
     ///
     /// ```swift
     /// MessageBubble(message)
-    ///     .contextMenuInteraction(accessories: [
-    ///         ContextMenuAccessory(placement: .above(.preview)) { menu in
-    ///             ReactionsBar { reaction in menu.dismiss { react(with: reaction) } }
-    ///         }
-    ///     ]) {
+    ///     .contextMenuInteraction(accessories: [reactions]) {
     ///         ContextMenuAction(title: "Reply", image: .system(.reply)) { reply(to: message) }
     ///     }
     /// ```
@@ -73,11 +72,69 @@ public extension View {
         accessories: [ContextMenuAccessory] = [],
         @ContextMenuBuilder menu: @escaping @MainActor () -> [ContextMenuSection]
     ) -> some View {
+        contextMenuInteraction(
+            isPresented: isPresented,
+            alignment: alignment,
+            clipping: clipping,
+            style: style,
+            animationSpec: animationSpec,
+            preview: preview,
+            menu: menu,
+            accessories: { accessories }
+        )
+    }
+
+    /// Adds a context menu with accessories to the view.
+    ///
+    /// List the menu in the first closure and the accessories in the second one:
+    ///
+    /// ```swift
+    /// MessageBubble(message)
+    ///     .contextMenuInteraction {
+    ///         ContextMenuAction(title: "Reply", image: .system(.reply)) { reply(to: message) }
+    ///     } accessories: {
+    ///         ContextMenuAccessory(placement: .above(.preview)) { menu in
+    ///             ReactionsBar { reaction in menu.dismiss { react(with: reaction) } }
+    ///         }
+    ///         if message.isEdited {
+    ///             ContextMenuAccessory(placement: .below(.menu), transition: .opacity) { _ in
+    ///                 Text("Edited")
+    ///             }
+    ///         }
+    ///     }
+    /// ```
+    ///
+    /// The menu and the accessories are built right before the menu is shown, so they reflect the current state.
+    /// For an empty `menu` closure, only the preview and the accessories are shown. Everything else works
+    /// as in `contextMenuInteraction(isPresented:alignment:clipping:style:animationSpec:preview:accessories:menu:)`.
+    ///
+    /// - Parameters:
+    ///   - isPresented: Presents the menu without a press when set to `true`, for example from a "More" button,
+    ///     and dismisses it when set to `false`. The modifier sets it to `true` when the menu starts to appear
+    ///     and to `false` once the menu is dismissed or if it can't be shown.
+    ///   - alignment: Horizontal alignment of the menu relative to the preview.
+    ///   - clipping: Where the view is visible, so that on its way back the preview doesn't fly over bars.
+    ///   - style: Colors, fonts and sizes of the menu.
+    ///   - animationSpec: Timings and curves of the press, the presentation and the dismissal.
+    ///   - preview: What the menu lifts above the backdrop. A snapshot of the view by default.
+    ///   - menu: Sections, actions and custom items of the menu, see ``ContextMenuBuilder``.
+    ///   - accessories: Views shown next to the preview and the menu, see ``ContextMenuAccessoryBuilder``.
+    @available(iOS 16.0, *)
+    func contextMenuInteraction(
+        isPresented: Binding<Bool>? = nil,
+        alignment: ContextMenuAlignment = .automatic,
+        clipping: ContextMenuClipping = .none,
+        style: ContextMenuStyle = .default,
+        animationSpec: ContextMenuAnimationSpec = .default,
+        preview: ContextMenuPreview = .snapshot,
+        @ContextMenuBuilder menu: @escaping @MainActor () -> [ContextMenuSection],
+        @ContextMenuAccessoryBuilder accessories: @escaping @MainActor () -> [ContextMenuAccessory]
+    ) -> some View {
         ContextMenuInteractionRepresentable(content: self, isPresented: isPresented) {
             ContextMenuConfiguration(
                 menu: ContextMenu(content: menu),
                 preview: preview,
-                accessories: accessories,
+                accessories: accessories(),
                 alignment: alignment,
                 clipping: clipping,
                 style: style,
